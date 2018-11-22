@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package todo.v1;
+
+option go_package = "todo";
+option java_multiple_files = true;
+option java_package = "com.adcubum.syrius.grpc";
+option java_outer_classname = "TodoProto";
+
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "rest.proto";
+
+
+service TodoService {
+	rpc CreateTodo(CreateTodoRequest) returns (CreateTodoResponse) {
+		option (google.api.http) ={
+			post: "/todos"
+			body: "item"
+		};
+	}
+
+
+	rpc GetTodo(GetTodoRequest) returns (TodoEntity) {
+		option (google.api.http) ={
+			get: "/todos/{id}"
+		};
+	}
+
+	rpc ListTodo(ListTodoRequest) returns (TodoCollection) {
+		option (google.api.http) ={
+			get: "/todos"
+		};
+	}
+
+	rpc DeleteTodo(DeleteTodoRequest) returns (DeleteTodoResponse) {
+		option (google.api.http) ={
+			delete: "/todos/{id}"
+		};
+	}
+
+	rpc UpdateTodo(UpdateTodoRequest) returns (UpdateTodoResponse) {
+		option (google.api.http) ={
+			put: "/todos/{id}"
+			body: "item"
+		};
+	}
+
+}
+enum Complete {
+	UNKNOWN = 0;
+	RUNNING = 1;
+	COMPLETED = 2;
+}
+
+
+message Todo {
+	string id = 1 ;
+	string title = 2 ;
+	string description = 3 ;
+	Complete completed = 4 ;
+	google.protobuf.Timestamp created_at = 5;
+	google.protobuf.Timestamp updated_at = 6;
+}
+
+message CreateTodoRequest {
+	Todo item = 1;
+}
+
+message CreateTodoResponse {
+	repeated Link links = 2;
+}
+
+message GetTodoRequest {
+	string id = 1;
+}
+
+message TodoEntity {
+	Todo data = 1;
+	repeated Link links = 2;
+}
+
+message ListTodoRequest {
+	int32 limit = 1;
+	bool not_completed = 2;
+	int32 page = 3;
+}
+
+message TodoCollection {
+	repeated TodoEntity data = 1;
+	repeated Link links = 2;
+}
+
+message DeleteTodoRequest {
+	string id = 1;
+}
+
+message DeleteTodoResponse {}
+
+message UpdateTodoRequest {
+	string id = 1;
+	Todo item = 2;
+}
+
+message UpdateTodoResponse {
+	Todo data = 1;
+	repeated Link links = 2;
+}
+
+
